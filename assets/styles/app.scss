@@ -1,0 +1,17 @@
+// assets/styles/global.scss
+
+// customize some Bootstrap variables
+$primary: #2F7CBF;
+$secondary:  #E9D3C0;
+
+// the ~ allows you to reference things in node_modules
+@import "~bootstrap/scss/bootstrap";
+
+
+.navbar-brand > img {
+    width: 100px;
+}
+
+.nav-custom {
+    background-color: $secondary;
+}
