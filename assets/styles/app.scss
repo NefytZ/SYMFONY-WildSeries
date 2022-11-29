@@ -13,5 +13,14 @@ $secondary:  #E9D3C0;
 }
 
 .nav-custom {
-    background-color: $secondary;
+    background-color: $secondary; 
+    }
+
+.nav-item > a:hover {
+    color:$primary;
+}
+
+.homebtn {
+    width:40px;
+    background-color: $primary;
 }
