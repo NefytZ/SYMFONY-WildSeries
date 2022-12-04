@@ -9,7 +9,7 @@
 
 	<div class="media">
 		{% for seasons in season %}
-		<a href="{{ path('season_index', { id: seasons.id }) }}">{{ seasons.description }}</a>
+		<a href="{{ path('season_index', { id: seasons.id }) }}">{{ seasons.number }}</a>
 		{% endfor %}
 
 		<img class="align-self-start mr-3" src="{{program.poster}}" alt="{{ program.title }} poster">

@@ -2,120 +2,38 @@
 
 namespace App\DataFixtures;
 
-use App\Entity\Episode;
 use App\Entity\Season;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
-use phpDocumentor\Reflection\Types\Self_;
+use Faker\Factory;
 
 class SeasonFixtures extends Fixture implements DependentFixtureInterface
 {
 
-    public const SEASONS = [
-        'Saison1',
-        'Saison2',
-        'Saison3',
-        'Saison4',
-        'Saison5',
-    ];
-
     public function load(ObjectManager $manager): void
     {
+        $faker = Factory::create();
 
-        foreach (Self::SEASONS as $key) {
-            $saisons = new Season();
+        for ($p = 0; $p < 5; $p++) {
+            for ($i = 0; $i < 5; $i++) {
 
-            $saisons->setNumber(5);
+                $season = new Season();
 
-            $saisons->setYear(2002);
+                $season->setNumber($i);
+                $season->setYear($faker->year());
+                $season->setDescription($faker->paragraphs(3, true));
+                $season->setProgram($this->getReference('program_' . $p));
 
-            $saisons->setDescription($key);
+                $this->addReference('program_' . $p . 'season_' . $i, $season);
 
-            $program =  $this->getReference('program_walking');
-
-            $this->addReference('program_walking_' . $key , $saisons);
-           
-            $saisons->setProgram($program);
-
-            $manager->persist($saisons);
+                $manager->persist($season);
+            }
         }
-        
-        
-        foreach (Self::SEASONS as $key) {
-            $saisons = new Season();
-
-            $saisons->setNumber(5);
-
-            $saisons->setYear(2002);
-
-            $saisons->setDescription($key);
-
-            $program =  $this->getReference('program_blackMirror');
-
-            $this->addReference('program_blackMirror_' . $key , $saisons);
-           
-            $saisons->setProgram($program);
-
-            $manager->persist($saisons);
-        }
-
-        foreach (Self::SEASONS as $key) {
-            $saisons = new Season();
-
-            $saisons->setNumber(5);
-
-            $saisons->setYear(2002);
-
-            $saisons->setDescription($key);
-
-            $program =  $this->getReference('program_you');
-
-            $this->addReference('program_you_' . $key , $saisons);
-
-            $saisons->setProgram($program);
-
-            $manager->persist($saisons);
-        }
-
-        foreach (Self::SEASONS as $key) {
-            $saisons = new Season();
-
-            $saisons->setNumber(5);
-
-            $saisons->setYear(2002);
-
-            $saisons->setDescription($key);
-
-            $program =  $this->getReference('program_manifest');
-
-            $this->addReference('program_manifest_' . $key , $saisons);
-
-            $saisons->setProgram($program);
-
-            $manager->persist($saisons);
-        }
-
-        foreach (Self::SEASONS as $key) {
-            $saisons = new Season();
-
-            $saisons->setNumber(5);
-
-            $saisons->setYear(2002);
-
-            $saisons->setDescription($key);
-
-            $program =  $this->getReference('program_waywardPines');
-
-            $this->addReference('program_waywardPines_' . $key , $saisons);
-
-            $saisons->setProgram($program);
-
-            $manager->persist($saisons);
-        }
-
         $manager->flush();
     }
+
+
     public function getDependencies()
 
     {
