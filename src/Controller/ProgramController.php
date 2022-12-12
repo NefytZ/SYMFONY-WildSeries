@@ -5,9 +5,7 @@ namespace App\Controller;
 use App\Entity\Season;
 use App\Entity\Episode;
 use App\Entity\Program;
-use App\Entity\Category;
 use App\Form\ProgramType;
-use App\Form\CategoryType;
 use Doctrine\ORM\Mapping\Entity;
 use App\Repository\ProgramRepository;
 use Symfony\Component\HttpFoundation\Request;
@@ -40,8 +38,9 @@ class ProgramController extends AbstractController
 
    if ($form->isSubmitted() && $form->isValid()) {
             $programRepository->save($program, true);
-
-        return $this->redirectToRoute('program_index', [], Response::HTTP_SEE_OTHER);
+            $this->addFlash('success', 'Le nouveau programme a été crée !');
+        
+            return $this->redirectToRoute('program_index', [], Response::HTTP_SEE_OTHER);
     }
     return $this->renderForm('program/new.html.twig', [
         'program' => $program,
