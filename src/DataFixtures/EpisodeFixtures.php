@@ -8,41 +8,41 @@ use Doctrine\Persistence\ObjectManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 
+class EpisodeFixtures extends Fixture implements DependentFixtureInterface
 
-    class EpisodeFixtures extends Fixture implements DependentFixtureInterface
+{
 
+    public const EPISODES = 10;
+
+    public function load(ObjectManager $manager): void
     {
-    
-        public function load(ObjectManager $manager): void
-        {
-            $faker = Factory::create();
-    
-            for ($p = 0; $p < 5; $p++) {
-                for ($i = 0; $i < 5; $i++) {
-                    for ($j = 0; $j < 10; $j++) {
-    
+        $faker = Factory::create();
+
+        foreach (CategoryFixtures::CATEGORIES as $categoryName) {
+            for ($i = 1; $i <= ProgramFixtures::PROGRAMS; $i++) {
+                for ($j = 1; $j <= SeasonFixtures::SEASONS; $j++) {
+                    for ($k = 1; $k <= self::EPISODES; $k++) {
                         $episode = new Episode();
-    
-                        $episode->setTitle($faker->words(1, 3));
-                        $episode->setNumber($j);
-                        $episode->setSynopsis($faker->paragraphs(2, true));
-                        $episode->setSeason($this->getReference('program_' . $p . 'season_' . $i));
-    
+                        $episode->setTitle($faker->sentence());
+                      
+                       
+                        $episode->setSynopsis($faker->paragraph(4, true));
+                      
+                        $episode->setNumber($k);
+                        $episode->setSeason($this->getReference('program_' . $i . '_' . $categoryName . '_season_' . $j));
                         $manager->persist($episode);
                     }
                 }
             }
-            $manager->flush();
         }
 
+        $manager->flush();
+    }
+
     public function getDependencies()
-
     {
-
         return [
-
             SeasonFixtures::class,
-
         ];
     }
 }

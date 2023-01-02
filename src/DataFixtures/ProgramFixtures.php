@@ -2,6 +2,7 @@
 
 namespace App\DataFixtures;
 
+use Faker\Factory;
 use App\Entity\Program;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -10,59 +11,36 @@ use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 class ProgramFixtures extends Fixture implements DependentFixtureInterface
 {
 
+    public const PROGRAMS = 5;
+    public const PROG_BY_ACTOR = 3;
 
-
-    const CATEGORIES = [
-        [
-            'Title' => 'Walking Dead',
-            'Synopsis' => 'Des zombies envahissent la terre.',
-            'Category' => 'category_Horreur',
-        ],
-        [
-            'Title' => 'Black Mirror',
-            'Synopsis' => 'Chaque épisode a un casting, un décor et une réalité différente.',
-            'Category' => 'category_Fantastique',
-        ],
-        [
-            'Title' => 'You',
-            'Synopsis' => 'Une jeune femme est un véritable coup de foudre pour Joe qui décide de la retrouver sur Internet.',
-            'Category' => 'category_Fantastique',
-        ],
-        [
-            'Title' => 'Manifest',
-            'Synopsis' => 'Un vol commercial, qui relie la Jamaïque aux Etats-Unis, fait face à de fortes turbulences mais parvient à rallier sa destination sans dommage.',
-            'Category' => 'category_Fantastique',
-        ],
-        [
-            'Title' => 'Wayward Pines',
-            'Synopsis' => 'Il doit enquêter sur la mystérieuse disparition de deux agents fédéraux.',
-            'Category' => 'category_Fantastique',
-        ],
-
-    ];
-
-    public function load(ObjectManager $manager): void
+    public function load(ObjectManager $manager)
     {
+        $faker = Factory::create();
 
-        foreach (self::CATEGORIES as $p => $category) {
-            $program = new Program();
-
-            $program->setTitle($category['Title']);
-            $program->setSynopsis($category['Synopsis']);
-            $program->setCategory($this->getReference($category['Category']));
-
-            $this->addReference('program_' . $p, $program);
-    
-            $manager->persist($program);
+        foreach (CategoryFixtures::CATEGORIES as $category) {
+            for ($i = 1; $i <= self::PROGRAMS; $i++) {
+                $program = new Program();
+                $program->setTitle($faker->sentence(4, true));
+                $program->setSynopsis($faker->paragraph(3));
+                $program->setCategory($this->getReference('category_' . $category));
+                $this->addReference('program_' . $i . '_' . $category, $program);
+                for ($j = 1; $j < self::PROG_BY_ACTOR; $j++) {
+                    $program->addActor($this->getReference('actor_' . $faker->numberBetween(1, 10)));
+                }
+                $manager->persist($program);
+            }
         }
-
         $manager->flush();
     }
+
+
+
     public function getDependencies()
     {
         return [
-          CategoryFixtures::class,
+            CategoryFixtures::class,
+
         ];
     }
-
 }
