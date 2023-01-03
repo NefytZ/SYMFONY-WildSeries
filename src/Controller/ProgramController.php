@@ -6,11 +6,13 @@ use App\Entity\Season;
 use App\Entity\Episode;
 use App\Entity\Program;
 use App\Form\ProgramType;
+use App\Service\ProgramDuration;
 use Doctrine\ORM\Mapping\Entity;
 use App\Repository\ProgramRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 #[Route('/program', name: 'program_')]
@@ -30,7 +32,7 @@ class ProgramController extends AbstractController
     }
 
     #[Route('/new', name: 'new')]
-    public function new(Request $request, ProgramRepository $programRepository): Response
+    public function new(Request $request, ProgramRepository $programRepository, SluggerInterface $slugger): Response
     {
         $program = new Program();
     $form = $this->createForm(ProgramType::class, $program);
@@ -50,7 +52,7 @@ class ProgramController extends AbstractController
 
     #[Route('/show/{id}', requirements: ['id' => '\d+'], name: 'show')]
 
-    public function show(Program $program): Response
+    public function show(Program $program, ProgramDuration $programDuration): Response
 
     {
         // same as $program = $programRepository->find($id)
@@ -58,6 +60,7 @@ class ProgramController extends AbstractController
         return $this->render('program/show.html.twig', [
 
             'program' => $program,
+            'programDuration' => $programDuration->calculate($program)
 
         ]);
     }
