@@ -1,5 +1,5 @@
 <?php
-// src/Controller/ProgramController.php
+
 namespace App\Controller;
 
 use App\Entity\Season;
@@ -8,8 +8,10 @@ use App\Entity\Program;
 use App\Form\ProgramType;
 use App\Service\ProgramDuration;
 use Doctrine\ORM\Mapping\Entity;
+use Symfony\Component\Mime\Email;
 use App\Repository\ProgramRepository;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\String\Slugger\SluggerInterface;
@@ -32,14 +34,21 @@ class ProgramController extends AbstractController
     }
 
     #[Route('/new', name: 'new')]
-    public function new(Request $request, ProgramRepository $programRepository, SluggerInterface $slugger): Response
+    public function new(Request $request, ProgramRepository $programRepository, SluggerInterface $slugger, MailerInterface $mailer): Response
     {
         $program = new Program();
-    $form = $this->createForm(ProgramType::class, $program);
-    $form->handleRequest($request);
+        $form = $this->createForm(ProgramType::class, $program);
+        $form->handleRequest($request);
 
    if ($form->isSubmitted() && $form->isValid()) {
             $programRepository->save($program, true);
+            $email = (new Email())
+        ->from($this->getParameter('mailer_from'))
+        ->to('your_email@example.com')
+        ->subject('Une nouvelle série vient d\'être publiée !')
+        ->html($this->renderView('Program/newProgramEmail.html.twig', ['program' => $program]));
+
+        $mailer->send($email);
             $this->addFlash('success', 'Le nouveau programme a été crée !');
         
             return $this->redirectToRoute('program_index', [], Response::HTTP_SEE_OTHER);
@@ -65,8 +74,8 @@ class ProgramController extends AbstractController
         ]);
     }
 
-    #[Route('/{program}/seasons/{season}', requirements: ['id' => '\d+'], name: 'season_show')] // le paramtre de ma route doit être identique à ma variable 
-    #[Entity('program', options: ['mapping' => ['program' => 'id']])] //{program} donc ['program' => 'id' ] pareil pour la vue twig {program: program.id}
+    #[Route('/{program}/seasons/{season}', requirements: ['id' => '\d+'], name: 'season_show')] 
+    #[Entity('program', options: ['mapping' => ['program' => 'id']])] 
     #[Entity('season', options: ['mapping' => ['season' => 'id']])]
     public function showSeason(Season $season, Program $program): Response
     {
@@ -76,7 +85,7 @@ class ProgramController extends AbstractController
             'season' => $season
         ]);
     }
-    #[Route('/program/{program}/season/{season}/episode/{episode}', requirements: ['id' => '\d+'], name: 'episode_show')] //{program} donc ['program' => 'id' ] pareil pour la vue twig {program: program.id}
+    #[Route('/program/{program}/season/{season}/episode/{episode}', requirements: ['id' => '\d+'], name: 'episode_show')] 
     public function showEpisode(Program $program, Season $season, Episode $episode): Response
     {
         return $this->render('program/episode_show.html.twig', [
