@@ -62,8 +62,8 @@ class ProgramController extends AbstractController
         ]);
     }
 
-    #[Route('/{program}/seasons/{season}', requirements: ['id' => '\d+'], name: 'season_show')] // le paramtre de ma route doit être identique à ma variable 
-    #[Entity('program', options: ['mapping' => ['program' => 'id']])] //{program} donc ['program' => 'id' ] pareil pour la vue twig {program: program.id}
+    #[Route('/{program}/seasons/{season}', requirements: ['id' => '\d+'], name: 'season_show')] 
+    #[Entity('program', options: ['mapping' => ['program' => 'id']])]
     #[Entity('season', options: ['mapping' => ['season' => 'id']])]
     public function showSeason(Season $season, Program $program): Response
     {
@@ -73,7 +73,7 @@ class ProgramController extends AbstractController
             'season' => $season
         ]);
     }
-    #[Route('/program/{program}/season/{season}/episode/{episode}', requirements: ['id' => '\d+'], name: 'episode_show')] //{program} donc ['program' => 'id' ] pareil pour la vue twig {program: program.id}
+    #[Route('/program/{program}/season/{season}/episode/{episode}', requirements: ['id' => '\d+'], name: 'episode_show')]
     public function showEpisode(Program $program, Season $season, Episode $episode): Response
     {
         return $this->render('program/episode_show.html.twig', [
